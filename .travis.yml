@@ -19,7 +19,7 @@ before_install:
 - sfdx --version
 - sfdx plugins --core
 - sfdx force:auth:jwt:grant --clientid 3MVG9SemV5D80oBc6e6VuMv1rns1SCNFk2iOTL7Vxjc5QRRy6qwQqh79yUrT8pYhJHleHNJ2eyvf9Jm1vrPb. --jwtkeyfile assets/server.key
-  --username sandbox@gs0.com --setdefaultdevhubusername -a HubOrg
+  --username jqian-tdx2019@force.com --setdefaultdevhubusername -a HubOrg
 script:
 - sfdx force:org:create --help
 #- sfdx force:org:create -t sandbox -u sandbox@gs0.com -a cisbxorg -w 60 SandboxName=jqTdx2 LicenseType=DEVELOPER

@@ -18,7 +18,7 @@ before_install:
 - sfdx plugins:install salesforcedx@pre-release
 - sfdx --version
 - sfdx plugins --core
-- sfdx force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key
+- sfdx force:auth:jwt:grant --clientid 3MVG9SemV5D80oBc6e6VuMv1rns1SCNFk2iOTL7Vxjc5QRRy6qwQqh79yUrT8pYhJHleHNJ2eyvf9Jm1vrPb. --jwtkeyfile assets/server.key
   --username sandbox@gs0.com --setdefaultdevhubusername -a HubOrg
 script:
 - sfdx force:org:create --help

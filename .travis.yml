@@ -1,0 +1,36 @@
+sudo: true
+os: trusty
+cache: false
+env:
+- URL=https://developer.salesforce.com/media/salesforce-cli/sfdx-linux-amd64.tar.xz
+before_install:
+- openssl aes-256-cbc -K $encrypted_84ca2c94b925_key -iv $encrypted_84ca2c94b925_iv
+  -in assets/server.key.enc -out assets/server.key -d
+- export SFDX_AUTOUPDATE_DISABLE=false
+- export SFDX_USE_GENERIC_UNIX_KEYCHAIN=true
+- export SFDX_DOMAIN_RETRY=300
+- export SFDX_DISABLE_APP_HUB=true
+- export SFDX_LOG_LEVEL=DEBUG
+- mkdir sfdx
+- wget -qO- $URL | tar xJ -C sfdx --strip-components 1
+- "./sfdx/install"
+- export PATH=./sfdx/$(pwd):$PATH
+- sfdx plugins:install salesforcedx@pre-release
+- sfdx --version
+- sfdx plugins --core
+- sfdx force:auth:jwt:grant --clientid $CONSUMERKEY --jwtkeyfile assets/server.key
+  --username sandbox@gs0.com --setdefaultdevhubusername -a HubOrg
+script:
+- sfdx force:org:create --help
+#- sfdx force:org:create -t sandbox -u sandbox@gs0.com -a cisbxorg -w 60 SandboxName=jqTdx2 LicenseType=DEVELOPER
+#- sfdx force:org:status -n jqTdx1
+#- sfdx force:source:deploy -u cisbxorg -p force-app -w 20
+#- sfdx force:apex:test:run -u cisbxorg --wait 10
+#- sfdx force:org:open -u cisbxorg
+
+- sfdx force:org:create -v HubOrg -s -f config/project-scratch-def.json -a ciorg
+- sfdx force:org:display -u ciorg
+- sfdx force:source:push -u ciorg
+- sfdx force:apex:test:run -u ciorg --wait 10
+- sfdx force:org:delete -u ciorg -p
+

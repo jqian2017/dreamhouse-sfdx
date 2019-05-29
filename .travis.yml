@@ -14,7 +14,7 @@ before_install:
 - mkdir sfdx
 - wget -qO- $URL | tar xJ -C sfdx --strip-components 1
 
-#install SFDX CLI
+#install Salesforce CLI, pre-release available Summer 19
 - "./sfdx/install"
 - export PATH=./sfdx/$(pwd):$PATH
 - sfdx plugins:install salesforcedx@pre-release
@@ -29,20 +29,20 @@ before_install:
 script:
 
 # create a new dev sandbox for integration testing
-#- sfdx force:org:create -t sandbox -u ProdOrg SandboxName=jqTdx1 LicenseType=DEVELOPER -a cisbxorg -w 60 
+#- sfdx force:org:create -t sandbox -u ProdOrg SandboxName=jqTdx2 LicenseType=DEVELOPER -a cisbxorg -w 60 
 
 # OR clone a preconfiged dev sandbox for testing
 #- sfdx force:org:clone -t sandbox -u ProdOrg SandboxName=ciclone SourceSandboxName=preConfg -a cisbxorg -w 60
 
 # monitor sandbox progression
-- sfdx force:org:status -n jqTdx1 -u ProdOrg
+- sfdx force:org:status -n jqTdx1 -u ProdOrg -a cisbxorg -w 10
 
 # deploy metadata source
-- sfdx force:source:deploy -u cisbxorg -p force-app -w 30
+#- sfdx force:source:deploy -u cisbxorg -p force-app -w 30
 
 # OR install the package to the sandbox for package development
-# - sfdx force:package:install 
+# - sfdx force:package:install -p 04Txxxx -w 20
 
 # run extensive integration apex test
-- sfdx force:apex:test:run -u cisbxorg --wait 10
+#- sfdx force:apex:test:run -u cisbxorg --wait 10
 

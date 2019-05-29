@@ -13,24 +13,36 @@ before_install:
 - export SFDX_LOG_LEVEL=DEBUG
 - mkdir sfdx
 - wget -qO- $URL | tar xJ -C sfdx --strip-components 1
+
+#install SFDX CLI
 - "./sfdx/install"
 - export PATH=./sfdx/$(pwd):$PATH
 - sfdx plugins:install salesforcedx@pre-release
+
 - sfdx --version
 - sfdx plugins --core
-- sfdx force:auth:jwt:grant --clientid 3MVG9SemV5D80oBc6e6VuMv1rns1SCNFk2iOTL7Vxjc5QRRy6qwQqh79yUrT8pYhJHleHNJ2eyvf9Jm1vrPb. --jwtkeyfile assets/server.key
-  --username jqian-tdx2019@force.com --setdefaultdevhubusername -a HubOrg
-script:
-- sfdx force:org:create --help
-#- sfdx force:org:create -t sandbox -u sandbox@gs0.com -a cisbxorg -w 60 SandboxName=jqTdx2 LicenseType=DEVELOPER
-#- sfdx force:org:status -n jqTdx1
-#- sfdx force:source:deploy -u cisbxorg -p force-app -w 20
-#- sfdx force:apex:test:run -u cisbxorg --wait 10
-#- sfdx force:org:open -u cisbxorg
 
-- sfdx force:org:create -v HubOrg -s -f config/project-scratch-def.json -a ciorg
-- sfdx force:org:display -u ciorg
-- sfdx force:source:push -u ciorg
-- sfdx force:apex:test:run -u ciorg --wait 10
-- sfdx force:org:delete -u ciorg -p
+#headlessly auth into production org
+- sfdx force:auth:jwt:grant --clientid 3MVG9SemV5D80oBc6e6VuMv1rns1SCNFk2iOTL7Vxjc5QRRy6qwQqh79yUrT8pYhJHleHNJ2eyvf9Jm1vrPb. --jwtkeyfile assets/server.key
+  --username jqian-tdx2019@force.com --setdefaultusername -a ProdOrg
+
+script:
+
+# create a new dev sandbox for integration testing
+#- sfdx force:org:create -t sandbox -u ProdOrg SandboxName=jqTdx1 LicenseType=DEVELOPER -a cisbxorg -w 60 
+
+# OR clone a preconfiged dev sandbox for testing
+#- sfdx force:org:clone -t sandbox -u ProdOrg SandboxName=ciclone SourceSandboxName=preConfg -a cisbxorg -w 60
+
+# monitor sandbox progression
+- sfdx force:org:status -n jqTdx1 -u ProdOrg
+
+# deploy metadata source
+- sfdx force:source:deploy -u cisbxorg -p force-app -w 30
+
+# OR install the package to the sandbox for package development
+# - sfdx force:package:install 
+
+# run extensive integration apex test
+- sfdx force:apex:test:run -u cisbxorg --wait 10
 
